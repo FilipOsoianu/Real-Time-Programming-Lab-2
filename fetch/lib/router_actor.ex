@@ -13,14 +13,14 @@ defmodule Router do
 
   def send_event_iot(event) do
     GenServer.cast(Router, {:router_iot, event})
-  end 
+  end
 
   def send_event_sensor(event) do
     GenServer.cast(Router, {:router_sensors, event})
   end
-  
+
   def send_event_legacy_sensors(event) do
-    IO.inspect(event)
+    # IO.inspect(event)
     # GenServer.cast(feeder_pid, {:router_legacy_sensors, event})
   end
 
@@ -29,6 +29,7 @@ defmodule Router do
     counter = states
     recommend_max_workers = GenServer.call(DataFlowIot, :recommend_max_workers)
     pids_list = DynSupervisorIot.pid_children()
+
     if DynSupervisorIot.count_children()[:active] < recommend_max_workers do
       create_worker(DynSupervisorIot, msg)
     else
@@ -49,12 +50,12 @@ defmodule Router do
     end
   end
 
-
   @impl true
   def handle_cast({:router_sensors, msg}, states) do
     counter = states
     recommend_max_workers = GenServer.call(DataFlowSensors, :recommend_max_workers)
     pids_list = DynSupervisorSensors.pid_children()
+
     if DynSupervisorSensors.count_children()[:active] < recommend_max_workers do
       create_worker(DynSupervisorSensors, msg)
     else
@@ -75,8 +76,7 @@ defmodule Router do
     end
   end
 
-
-  defp compute_forecast( supevisor, pids_list, counter, msg) do
+  defp compute_forecast(supevisor, pids_list, counter, msg) do
     supevisor.compune_and_send_forecast(Enum.at(pids_list, counter), msg)
   end
 

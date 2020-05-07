@@ -6,11 +6,11 @@ defmodule Lab1.Application do
       %{
         id: DataFlowIot,
         start: {DataFlowIot, :start_link, [""]}
-      },      
+      },
       %{
         id: DataFlowSensors,
         start: {DataFlowSensors, :start_link, [""]}
-      },   
+      },
       %{
         id: DataFlowLegacy,
         start: {DataFlowLegacy, :start_link, [""]}
@@ -38,10 +38,14 @@ defmodule Lab1.Application do
       %{
         id: RequestIot,
         start: {RequestIot, :start_link, ["http://localhost:4000/iot"]}
-      }, 
+      },
       %{
         id: RequestLegacy,
         start: {RequestLegacy, :start_link, ["http://localhost:4000/legacy_sensors"]}
+      },
+      %{
+        id: Publisher,
+        start: {Publisher, :start_link, [""]}
       }
     ]
 

@@ -12,8 +12,7 @@ defmodule WorkerLegacy do
 
   @impl true
   def handle_cast({:compute, msg}, _states) do
-
-    IO.inspect(msg)
+    # IO.inspect(msg)
     {:noreply, []}
   end
 
@@ -21,7 +20,6 @@ defmodule WorkerLegacy do
   def terminate(_reason, _state) do
     DynamicSupervisor.terminate_child(DynSupervisorLegacy, self())
   end
-
 
   # defp calc_mean(data) do
   #   light_sensor_1 = data["light_sensor_1"]

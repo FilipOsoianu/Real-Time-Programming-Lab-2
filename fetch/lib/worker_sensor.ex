@@ -14,7 +14,7 @@ defmodule WorkerSensor do
   def handle_cast({:compute, msg}, _states) do
     data = json_parse(msg)
     data = calc_mean(data)
-    IO.inspect(data)
+    # IO.inspect(data)
     {:noreply, []}
   end
 
@@ -35,8 +35,9 @@ defmodule WorkerSensor do
     unix_timestamp_us = data["unix_timestamp_us"]
 
     map = %{
-      :light_sensor => light_sensor,
+      :light_sensor => light_sensor
     }
+
     map
   end
 
