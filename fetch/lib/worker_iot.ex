@@ -14,7 +14,7 @@ defmodule WorkerIot do
   def handle_cast({:compute, msg}, _states) do
     data = json_parse(msg)
     data = calc_mean(data)
-    GenServer.cast(Publisher, {:data, data})
+    GenServer.cast(PublisherIot, {:data, data})
     {:noreply, []}
   end
 
@@ -35,16 +35,16 @@ defmodule WorkerIot do
     wind_speed_sensor_1 = data["wind_speed_sensor_1"]
     wind_speed_sensor_2 = data["wind_speed_sensor_2"]
     wind_speed_sensor = mean(wind_speed_sensor_1, wind_speed_sensor_2)
-    unix_timestamp_us = data["unix_timestamp_us"]
+    unix_timestamp_us = data["unix_timestamp_100us"]
 
     map = %{
       :atmo_pressure_sensor => atmo_pressure_sensor,
       :wind_speed_sensor => wind_speed_sensor,
-      :unix_timestamp_us => unix_timestamp_us
+      :unix_timestamp_us => unix_timestamp_us,
+      :topic => "iot"
     }
-    {:ok, json} = Jason.encode(map)
-    IO.inspect(json)
 
+    {:ok, json} = Jason.encode(map)
     json
   end
 

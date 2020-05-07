@@ -12,7 +12,8 @@ defmodule WorkerLegacy do
 
   @impl true
   def handle_cast({:compute, msg}, _states) do
-    # IO.inspect(msg)
+    # GenServer.cast(PublisherLegacy, {:data, data})
+
     {:noreply, []}
   end
 

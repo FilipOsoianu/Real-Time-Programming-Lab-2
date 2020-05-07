@@ -44,8 +44,16 @@ defmodule Lab1.Application do
         start: {RequestLegacy, :start_link, ["http://localhost:4000/legacy_sensors"]}
       },
       %{
-        id: Publisher,
-        start: {Publisher, :start_link, [""]}
+        id: PublisherIot,
+        start: {PublisherIot, :start_link, [[6661 | 6666]]}
+      },
+      %{
+        id: PublisherSensors,
+        start: {PublisherSensors, :start_link, [[6662 | 6666]]}
+      },
+      %{
+        id: PublisherLegacy,
+        start: {PublisherLegacy, :start_link, [[6663 | 6666]]}
       }
     ]
 
