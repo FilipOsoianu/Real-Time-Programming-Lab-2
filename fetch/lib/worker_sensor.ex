@@ -32,11 +32,11 @@ defmodule WorkerSensor do
     light_sensor_1 = data["light_sensor_1"]
     light_sensor_2 = data["light_sensor_2"]
     light_sensor = mean(light_sensor_1, light_sensor_2)
-    unix_timestamp_us = data["unix_timestamp_100us"]
+    unix_timestamp_100us = data["unix_timestamp_100us"]
 
     map = %{
       :light_sensor => light_sensor,
-      :unix_timestamp_us => unix_timestamp_us,
+      :unix_timestamp_us => unix_timestamp_100us,
       :topic => "sensors"
     }
 

@@ -1,3 +1,5 @@
+import SweetXml
+
 defmodule WorkerLegacy do
   use GenServer, restart: :transient
 
@@ -12,8 +14,10 @@ defmodule WorkerLegacy do
 
   @impl true
   def handle_cast({:compute, msg}, _states) do
-    # GenServer.cast(PublisherLegacy, {:data, data})
-
+    data = json_parse(msg)
+    data = xml_parse(data)
+    # IO.inspect(msg)
+    GenServer.cast(PublisherLegacy, {:data, data})
     {:noreply, []}
   end
 
@@ -22,19 +26,72 @@ defmodule WorkerLegacy do
     DynamicSupervisor.terminate_child(DynSupervisorLegacy, self())
   end
 
-  # defp calc_mean(data) do
-  #   light_sensor_1 = data["light_sensor_1"]
-  #   light_sensor_2 = data["light_sensor_2"]
-  #   light_sensor = mean(light_sensor_1, light_sensor_2)
-  #   unix_timestamp_us = data["unix_timestamp_us"]
+  defp json_parse(msg) do
+    msg_data = Jason.decode!(msg.data)
+    msg_data["message"]
+    
+  end
 
-  #   map = %{
-  #     :light_sensor => light_sensor,
-  #   }
-  #   map
-  # end
+
+  def xml_parse(data) do
+    humidity_sensor_values = data |> xpath(~x"//humidity_percent/value"l, value: ~x"text()") |> Enum.map(fn %{value: value} ->
+      value
+    end)
+    temperature_sensor_values = data |> xpath(~x"//temperature_celsius/value"l, value: ~x"text()") |> Enum.map(fn %{value: value} ->
+      value
+    end)
+
+    unix_timestamp_100us = get_xml_timestamp(data)
+
+    [humidity_sensor_1 | humidity_sensor_2] = humidity_sensor_values
+    [temperature_sensor_1| temperature_sensor_2] = temperature_sensor_values
+
+    humidity_sensor_1 = single_quotes_to_float(humidity_sensor_1)
+    humidity_sensor_2 = single_quotes_to_float(humidity_sensor_2)
+    temperature_sensor_1 = single_quotes_to_float(temperature_sensor_1)
+    temperature_sensor_2 = single_quotes_to_float(temperature_sensor_2)
+    unix_timestamp_100us = single_quotes_to_integer(unix_timestamp_100us)
+
+    humidity_sensor = mean(humidity_sensor_1, humidity_sensor_2)
+    temperature_sensor = mean(temperature_sensor_1, temperature_sensor_2)
+
+    map = %{
+      :humidity_sensor => humidity_sensor,
+      :temperature_sensor => temperature_sensor,
+      :unix_timestamp_100us => unix_timestamp_100us,
+      :topic => "legacy_sensors"
+    }
+    {:ok, json} = Jason.encode(map)
+    json
+  end
+
+  defp single_quotes_to_float(num) do
+    num = to_string(num)
+    num = String.to_float(num)
+    num
+  end
+
+  defp single_quotes_to_integer(num) do
+    num = to_string(num)
+    num = String.to_integer(num)
+    num
+  end
+
+
+  defp get_xml_timestamp(xml) do
+    xml = parse(xml) |> xmlElement()
+    xml = Enum.at(xml, 6)
+    xml = Tuple.to_list(xml)
+    xml = List.last(xml)
+    xml = List.first(xml)
+    xml = Tuple.to_list(xml)
+    xml = Enum.at(xml, 8)
+    xml
+  end
+
+
 
   defp mean(a, b) do
-    (a + b) / 2
+    a + b / 2
   end
 end

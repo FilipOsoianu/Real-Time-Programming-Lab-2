@@ -15,7 +15,7 @@ defmodule PublisherSensors do
 
   @impl true
   def handle_cast({:data, data}, state) do
-     [server_port | socket] = state 
+    [server_port | socket] = state
     :gen_udp.send(socket, {127, 0, 0, 1}, server_port, data)
     {:noreply, state}
   end

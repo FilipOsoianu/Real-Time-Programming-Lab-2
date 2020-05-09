@@ -20,8 +20,7 @@ defmodule Router do
   end
 
   def send_event_legacy_sensors(event) do
-    # IO.inspect(event)
-    # GenServer.cast(feeder_pid, {:router_legacy_sensors, event})
+    GenServer.cast(Router, {:router_legacy_sensors, event})
   end
 
   @impl true
@@ -72,6 +71,32 @@ defmodule Router do
     else
       counter = 0
       compute_forecast(DynSupervisorSensors, pids_list, counter, msg)
+      {:noreply, counter}
+    end
+  end
+
+  @impl true
+  def handle_cast({:router_legacy_sensors, msg}, states) do
+    counter = states
+    recommend_max_workers = GenServer.call(DataFlowLegacy, :recommend_max_workers)
+    pids_list = DynSupervisorLegacy.pid_children()
+
+    if DynSupervisorLegacy.count_children()[:active] < recommend_max_workers do
+      create_worker(DynSupervisorLegacy, msg)
+    else
+      if DynSupervisorLegacy.count_children()[:active] > recommend_max_workers do
+        [head | _tail] = pids_list
+        remove_worker(DynSupervisorLegacy, head)
+      end
+    end
+
+    if counter < length(pids_list) do
+      counter = counter + 1
+      compute_forecast(DynSupervisorLegacy, pids_list, counter, msg)
+      {:noreply, counter}
+    else
+      counter = 0
+      compute_forecast(DynSupervisorLegacy, pids_list, counter, msg)
       {:noreply, counter}
     end
   end

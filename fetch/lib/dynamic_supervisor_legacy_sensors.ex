@@ -12,8 +12,8 @@ defmodule DynSupervisorLegacy do
 
   def create_worker(msg) do
     child_spec = %{
-      id: WorkerSensor,
-      start: {WorkerSensor, :start_link, [msg]},
+      id: WorkerLegacy,
+      start: {WorkerLegacy, :start_link, [msg]},
       restart: :temporary,
       shutdown: :brutal_kill
     }

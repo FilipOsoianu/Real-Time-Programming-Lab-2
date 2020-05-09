@@ -35,12 +35,12 @@ defmodule WorkerIot do
     wind_speed_sensor_1 = data["wind_speed_sensor_1"]
     wind_speed_sensor_2 = data["wind_speed_sensor_2"]
     wind_speed_sensor = mean(wind_speed_sensor_1, wind_speed_sensor_2)
-    unix_timestamp_us = data["unix_timestamp_100us"]
+    unix_timestamp_100us = data["unix_timestamp_100us"]
 
     map = %{
       :atmo_pressure_sensor => atmo_pressure_sensor,
       :wind_speed_sensor => wind_speed_sensor,
-      :unix_timestamp_us => unix_timestamp_us,
+      :unix_timestamp_100us => unix_timestamp_100us,
       :topic => "iot"
     }
 
