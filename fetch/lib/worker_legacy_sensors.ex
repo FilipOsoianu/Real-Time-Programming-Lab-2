@@ -16,7 +16,6 @@ defmodule WorkerLegacy do
   def handle_cast({:compute, msg}, _states) do
     data = json_parse(msg)
     data = xml_parse(data)
-    # IO.inspect(msg)
     GenServer.cast(PublisherLegacy, {:data, data})
     {:noreply, []}
   end
