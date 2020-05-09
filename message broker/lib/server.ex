@@ -21,18 +21,8 @@ defmodule Server do
 
   defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
-    IO.inspect(socket)
 
-    case msg_data["topic"] do
-      "iot" ->
-        Queue.add_iot_topic(Queue, msg_data)
-
-      "sensors" ->
-        Queue.add_sensors_topic(Queue, msg_data)
-
-      "legacy_sensors" ->
-        Queue.add_legacy_sensors_topic(Queue, msg_data)
-    end
+    Queue.add_data_to_topic(Queue, msg_data)
 
     {:noreply, socket}
   end

@@ -28,22 +28,27 @@ defmodule WorkerLegacy do
   defp json_parse(msg) do
     msg_data = Jason.decode!(msg.data)
     msg_data["message"]
-    
   end
 
-
   def xml_parse(data) do
-    humidity_sensor_values = data |> xpath(~x"//humidity_percent/value"l, value: ~x"text()") |> Enum.map(fn %{value: value} ->
-      value
-    end)
-    temperature_sensor_values = data |> xpath(~x"//temperature_celsius/value"l, value: ~x"text()") |> Enum.map(fn %{value: value} ->
-      value
-    end)
+    humidity_sensor_values =
+      data
+      |> xpath(~x"//humidity_percent/value"l, value: ~x"text()")
+      |> Enum.map(fn %{value: value} ->
+        value
+      end)
+
+    temperature_sensor_values =
+      data
+      |> xpath(~x"//temperature_celsius/value"l, value: ~x"text()")
+      |> Enum.map(fn %{value: value} ->
+        value
+      end)
 
     unix_timestamp_100us = get_xml_timestamp(data)
 
     [humidity_sensor_1 | humidity_sensor_2] = humidity_sensor_values
-    [temperature_sensor_1| temperature_sensor_2] = temperature_sensor_values
+    [temperature_sensor_1 | temperature_sensor_2] = temperature_sensor_values
 
     humidity_sensor_1 = single_quotes_to_float(humidity_sensor_1)
     humidity_sensor_2 = single_quotes_to_float(humidity_sensor_2)
@@ -60,6 +65,7 @@ defmodule WorkerLegacy do
       :unix_timestamp_100us => unix_timestamp_100us,
       :topic => "legacy_sensors"
     }
+
     {:ok, json} = Jason.encode(map)
     json
   end
@@ -76,7 +82,6 @@ defmodule WorkerLegacy do
     num
   end
 
-
   defp get_xml_timestamp(xml) do
     xml = parse(xml) |> xmlElement()
     xml = Enum.at(xml, 6)
@@ -87,8 +92,6 @@ defmodule WorkerLegacy do
     xml = Enum.at(xml, 8)
     xml
   end
-
-
 
   defp mean(a, b) do
     a + b / 2

@@ -25,5 +25,4 @@ defmodule PublisherLegacy do
 
     {:noreply, socket}
   end
-
 end

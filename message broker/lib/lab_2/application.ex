@@ -10,6 +10,10 @@ defmodule Lab2.Application do
         start: {Server, :start_link, [6666]}
       },
       %{
+        id: SubscribeServer,
+        start: {SubscribeServer, :start_link, [6667]}
+      },
+      %{
         id: Queue,
         start: {Queue, :start_link, [""]}
       },
