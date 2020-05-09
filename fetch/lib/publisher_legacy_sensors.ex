@@ -19,4 +19,11 @@ defmodule PublisherLegacy do
     :gen_udp.send(socket, {127, 0, 0, 1}, server_port, data)
     {:noreply, state}
   end
+
+  defp handle_packet(data, socket) do
+    IO.inspect(data)
+
+    {:noreply, socket}
+  end
+
 end

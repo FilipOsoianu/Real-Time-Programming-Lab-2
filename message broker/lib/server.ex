@@ -2,7 +2,6 @@ defmodule Server do
   use GenServer
 
   def start_link(port) do
-    # Start 'er up
     GenServer.start_link(__MODULE__, port)
   end
 
@@ -22,6 +21,7 @@ defmodule Server do
 
   defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
+    IO.inspect(socket)
 
     case msg_data["topic"] do
       "iot" ->

@@ -46,7 +46,6 @@ defmodule Queue do
       :legacy_sensors => state[:legacy_sensors]
     }
 
-    IO.inspect(state)
     {:noreply, state}
   end
 
@@ -89,5 +88,45 @@ defmodule Queue do
     }
 
     {:noreply, state}
+  end
+
+  @impl true
+  def handle_call({:get_messages, topic}, _from, state) do
+    topic_atom = String.to_atom(topic)
+
+    case topic_atom do
+      "iot" ->
+        response = state[:iot]
+
+        state = %{
+          :iot => [],
+          :sensors => state[:sensors],
+          :legacy_sensors => state[:legacy_sensors]
+        }
+
+        {:reply, response, state}
+
+      "sensors" ->
+        response = state[:sensors]
+
+        state = %{
+          :iot => state[:iot],
+          :sensors => [],
+          :legacy_sensors => state[:legacy_sensors]
+        }
+
+        {:reply, response, state}
+
+      "legacy_sensors" ->
+        response = state[:legacy_sensors]
+
+        state = %{
+          :iot => state[:iot],
+          :sensors => state[:sensors],
+          :legacy_sensors => []
+        }
+
+        {:reply, response, state}
+    end
   end
 end

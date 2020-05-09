@@ -12,6 +12,10 @@ defmodule Lab2.Application do
       %{
         id: Queue,
         start: {Queue, :start_link, [""]}
+      },
+      %{
+        id: Sender,
+        start: {Sender, :start_link, [""]}
       }
     ]
 
