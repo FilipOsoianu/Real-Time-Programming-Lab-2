@@ -34,8 +34,7 @@ defmodule Subscriber do
 
   defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
-    IO.inspect(msg_data)
-    # Aggregator.aggregate(Aggregator, msg_data)
+    Aggregator.aggregate(Aggregator, msg_data)
     {:noreply, socket}
   end
 end

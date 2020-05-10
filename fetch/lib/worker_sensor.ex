@@ -36,7 +36,7 @@ defmodule WorkerSensor do
 
     map = %{
       :light_sensor => light_sensor,
-      :unix_timestamp_us => unix_timestamp_100us,
+      :unix_timestamp_100us => unix_timestamp_100us,
       :topic => "sensors"
     }
 

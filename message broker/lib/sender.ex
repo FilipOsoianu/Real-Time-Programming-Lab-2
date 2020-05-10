@@ -16,7 +16,7 @@ defmodule Sender do
 
   @impl true
   def handle_cast(:notify, state) do
-    Process.sleep(100)
+    Process.sleep(200)
     subscribers = SubscribeServer.get_subscribers(SubscribeServer)[:subscriber]
     socket = SubscribeServer.get_subscribers(SubscribeServer)[:socket]
 
