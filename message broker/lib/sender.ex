@@ -20,17 +20,10 @@ defmodule Sender do
     socket = SubscribeServer.get_subscribers(SubscribeServer)[:socket]
 
     Enum.each(subscribers, fn x ->
-      Enum.each(x[:topics], fn y ->
-        if Kernel.length(data[String.to_atom(y)]) > 0 do
-          {:ok, json} = Jason.encode(data[String.to_atom(y)])
-          :gen_udp.send(socket, x[:address], x[:port], json)
-          Queue.clear_queue(Queue, String.to_atom(y))
-        else
-          {:noreply, state}
-        end
-      end)
+      message = Map.take(data, x[:topics])
+      {:ok, json} = Jason.encode(message)
+      :gen_udp.send(socket, x[:address], x[:port], json)
     end)
-
     {:noreply, state}
   end
 end

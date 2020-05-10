@@ -8,11 +8,13 @@ defmodule Subscriber do
   def init(ports) do
     [subscriber_port | server_port] = ports
     {:ok, socket} = :gen_udp.open(subscriber_port, [:binary, active: true])
+
     topics_map = %{
-      :topics => "iot/sensors/legacy_sensors"
+      :topics => [:iot, :sensors, :legacy_sensors]
     }
+
     {:ok, topics_json} = Jason.encode(topics_map)
-    
+
     :gen_udp.send(socket, {127, 0, 0, 1}, server_port, topics_json)
 
     {:ok, socket}
@@ -30,7 +32,7 @@ defmodule Subscriber do
 
   defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
-    IO.inspect(msg_data)
+    Aggregator.aggregate(Aggregator, msg_data)
     {:noreply, socket}
   end
 end

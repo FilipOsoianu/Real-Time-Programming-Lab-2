@@ -2,12 +2,15 @@ defmodule Lab2.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec
 
     children = [
       %{
         id: Subscriber,
         start: {Subscriber, :start_link, [[6668 | 6667]]}
+      },
+      %{
+        id: Aggregator,
+        start: {Aggregator, :start_link, [""]}
       }
     ]
 
