@@ -20,6 +20,10 @@ defmodule Queue do
     GenServer.cast(queue, {:add_data, data})
   end
 
+  def clear_queue(queue) do
+    GenServer.cast(queue, :clear_queue)
+  end
+
   @impl true
   def handle_cast({:add_data, publisher_data}, state) do
     topic = publisher_data["topic"]
@@ -28,18 +32,17 @@ defmodule Queue do
     state_data = Map.get(state, topic_atom, [])
     state = Map.put(state, topic_atom, state_data ++ [publisher_data])
     Sender.send_data_to_subscribers(Sender, state)
-
     {:noreply, state}
   end
 
   @impl true
-  def handle_call({:get_messages, topic}, _from, state) do
-    topic_atom = String.to_atom(topic)
-    response = state[topic_atom]
-    state = Map.put(state, topic_atom, [])
-    IO.inspect(state)
-    {:reply, response, state}
+  def handle_cast(:clear_queue, state) do
+    state = %{
+      :iot => [],
+      :sensors => [],
+      :legacy_sensors => []
+    }
+
+    {:noreply, state}
   end
-
-
 end

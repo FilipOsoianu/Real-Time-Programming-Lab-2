@@ -18,11 +18,19 @@ defmodule Sender do
   def handle_cast({:send_data, data}, state) do
     subscribers = SubscribeServer.get_subscribers(SubscribeServer)[:subscriber]
     socket = SubscribeServer.get_subscribers(SubscribeServer)[:socket]
-    {:ok, json} = Jason.encode(data)
-    
+
     Enum.each(subscribers, fn x ->
-        :gen_udp.send(socket, x[:address], x[:port], json)
+      Enum.each(x[:topics], fn y ->
+        if Kernel.length(data[String.to_atom(y)]) > 0 do
+          {:ok, json} = Jason.encode(data[String.to_atom(y)])
+          :gen_udp.send(socket, x[:address], x[:port], json)
+        else
+          {:noreply, state}
+        end
+      end)
     end)
+
+    Queue.clear_queue(Queue)
     {:noreply, state}
   end
 end

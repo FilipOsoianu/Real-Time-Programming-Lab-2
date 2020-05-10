@@ -8,7 +8,7 @@ defmodule Subscriber do
   def init(ports) do
     [subscriber_port | server_port] = ports
     {:ok, socket} = :gen_udp.open(subscriber_port, [:binary, active: true])
-    :gen_udp.send(socket, {127, 0, 0, 1}, server_port, "iot")
+    :gen_udp.send(socket, {127, 0, 0, 1}, server_port, "iot/sensors/legacy_sensors")
 
     {:ok, socket}
   end
