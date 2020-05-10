@@ -10,20 +10,28 @@ defmodule Sender do
     {:ok, %{}}
   end
 
-  def send_data_to_subscribers(sender, data) do
-    GenServer.cast(sender, {:send_data, data})
+  def notify(sender) do
+    GenServer.cast(sender, :notify)
   end
 
   @impl true
-  def handle_cast({:send_data, data}, state) do
+  def handle_cast(:notify, state) do
+    Process.sleep(100)
     subscribers = SubscribeServer.get_subscribers(SubscribeServer)[:subscriber]
     socket = SubscribeServer.get_subscribers(SubscribeServer)[:socket]
 
-    Enum.each(subscribers, fn x ->
-      message = Map.take(data, x[:topics])
-      {:ok, json} = Jason.encode(message)
-      :gen_udp.send(socket, x[:address], x[:port], json)
-    end)
+    if Kernel.length(subscribers) > 0 do
+      Enum.each(subscribers, fn subscriber ->
+        message = Queue.get_messages(Queue, subscriber[:topics])
+        {:ok, json} = Jason.encode(message)
+        :gen_udp.send(socket, subscriber[:address], subscriber[:port], json)
+      end)
+
+      Queue.clear_queue(Queue)
+    else
+      {:noreply, state}
+    end
+
     {:noreply, state}
   end
 end

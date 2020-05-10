@@ -5,6 +5,8 @@ defmodule Subscriber do
     GenServer.start_link(__MODULE__, ports, name: __MODULE__)
   end
 
+
+
   def init(ports) do
     [subscriber_port | server_port] = ports
     {:ok, socket} = :gen_udp.open(subscriber_port, [:binary, active: true])
@@ -32,7 +34,8 @@ defmodule Subscriber do
 
   defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
-    Aggregator.aggregate(Aggregator, msg_data)
+    IO.inspect(msg_data)
+    # Aggregator.aggregate(Aggregator, msg_data)
     {:noreply, socket}
   end
 end

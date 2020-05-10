@@ -11,36 +11,17 @@ defmodule Aggregator do
 
   @impl true
   def init(msg) do
-
-    map = %{
-        :iot => [],
-        :sensors => [],
-        :legacy_sensors => [],
-      }
-    {:ok, map}
+   
+    {:ok, msg}
   end
 
   @impl true
   def handle_cast({:aggregate, data}, state) do
-
-
- 
     IO.inspect(data)
     {:noreply, state}
   end
 
-  # defp classify_map(map) do
-  #   check_iot = Map.has_key?(map, "atmo_pressure_sensor")
-  #   check_legacy_sensors = Map.has_key?(map, "humidity_sensor")
-  #   check_sensors = Map.has_key?(map, "light_sensor")
 
-  #   topic = cond do
-  #     check_iot == true -> "iot"
-  #     check_legacy_sensors == true -> "legacy_sensors"
-  #     check_sensors == true -> "sensors"
-  #   end
-  #   topic
-  # end
 
   # defp join_sensors(list_iot, list_legacy_sensors, list_sensors) do
   #   joined_list = Enum.map(list_iot, fn iot_msg ->
