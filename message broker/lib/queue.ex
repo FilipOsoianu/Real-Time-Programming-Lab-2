@@ -20,8 +20,8 @@ defmodule Queue do
     GenServer.cast(queue, {:add_data, data})
   end
 
-  def clear_queue(queue) do
-    GenServer.cast(queue, :clear_queue)
+  def clear_queue(queue, topic) do
+    GenServer.cast(queue, {:clear_topic_queue, topic})
   end
 
   @impl true
@@ -36,13 +36,8 @@ defmodule Queue do
   end
 
   @impl true
-  def handle_cast(:clear_queue, state) do
-    state = %{
-      :iot => [],
-      :sensors => [],
-      :legacy_sensors => []
-    }
-
+  def handle_cast({:clear_topic_queue, topic}, state) do
+    state = Map.replace!(state, topic, [])
     {:noreply, state}
   end
 end

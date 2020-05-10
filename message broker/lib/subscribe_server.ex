@@ -19,8 +19,10 @@ defmodule SubscribeServer do
   end
 
   def handle_info({:udp, _socket, address, port, data}, state) do
+    msg_data = Jason.decode!(data)
+    
     state_data = Map.get(state, :subscriber, [])
-    topics = String.split(data, "/")
+    topics = String.split(msg_data["topics"], "/")
 
     if !Enum.find(state_data, fn x -> x[:port] == port end) do
       state =
@@ -42,7 +44,6 @@ defmodule SubscribeServer do
           :subscriber,
           state_data
         )
-        IO.inspect(state)
 
       {:noreply, state}
     end

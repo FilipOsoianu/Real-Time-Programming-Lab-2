@@ -24,13 +24,13 @@ defmodule Sender do
         if Kernel.length(data[String.to_atom(y)]) > 0 do
           {:ok, json} = Jason.encode(data[String.to_atom(y)])
           :gen_udp.send(socket, x[:address], x[:port], json)
+          Queue.clear_queue(Queue, String.to_atom(y))
         else
           {:noreply, state}
         end
       end)
     end)
 
-    Queue.clear_queue(Queue)
     {:noreply, state}
   end
 end
