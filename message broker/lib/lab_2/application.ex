@@ -2,8 +2,6 @@ defmodule Lab2.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec
-
     children = [
       %{
         id: Server,

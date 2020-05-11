@@ -21,9 +21,7 @@ defmodule SubscribeServer do
   def handle_info({:udp, _socket, address, port, data}, state) do
     msg_data = Jason.decode!(data)
     state_data = Map.get(state, :subscriber, [])
-
-    topics_map =
-      Map.update!(msg_data, "topics", fn list -> Enum.map(list, &String.to_existing_atom/1) end)
+    topics_map = Map.update!(msg_data, "topics", fn list -> Enum.map(list, &String.to_atom/1) end)
 
     topics = topics_map["topics"]
 

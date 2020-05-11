@@ -7,14 +7,9 @@ defmodule Queue do
 
   @impl true
   def init(_) do
-    map = %{
-      :iot => [],
-      :sensors => [],
-      :legacy_sensors => [],
-      :joined_messages =>[]
-    }
+    state = %{}
 
-    {:ok, map}
+    {:ok, state}
   end
 
   def add_data_to_topic(queue, data) do
@@ -33,11 +28,17 @@ defmodule Queue do
   def handle_cast({:add_data, publisher_data}, state) do
     topic = publisher_data["topic"]
     topic_atom = String.to_atom(topic)
-    state_data = Map.get(state, topic_atom, [])
-    # IO.inspect(state)
-    state = Map.put(state, topic_atom, state_data ++ [publisher_data])
-    Sender.notify(Sender)
-    {:noreply, state}
+
+    if Map.has_key?(state, topic_atom) do
+      state_data = Map.get(state, topic_atom, [])
+      state = Map.put(state, topic_atom, state_data ++ [publisher_data])
+      Sender.notify(Sender)
+      {:noreply, state}
+    else
+      state = Map.put(state, topic_atom, [publisher_data])
+      Sender.notify(Sender)
+      {:noreply, state}
+    end
   end
 
   @impl true
@@ -48,13 +49,10 @@ defmodule Queue do
 
   @impl true
   def handle_cast(:clear_queue, state) do
-    state = %{
-      :iot => [],
-      :sensors => [],
-      :legacy_sensors => [],
-      :joined_messages => []
-      }
-
+    keys = Map.keys(state)
+    state = Map.new(keys, fn x ->
+      {x, []}
+    end)
     {:noreply, state}
   end
 end
