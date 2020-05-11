@@ -21,7 +21,6 @@ defmodule Server do
 
   defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
-
     Queue.add_data_to_topic(Queue, msg_data)
 
     {:noreply, socket}

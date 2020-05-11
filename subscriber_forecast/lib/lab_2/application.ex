@@ -5,11 +5,11 @@ defmodule Lab2.Application do
     children = [
       %{
         id: Subscriber,
-        start: {Subscriber, :start_link, [[6668 | 6667]]}
+        start: {Subscriber, :start_link, [[6669 | 6667]]}
       },
       %{
-        id: Aggregator,
-        start: {Aggregator, :start_link, [""]}
+        id: Forecast,
+        start: {Forecast, :start_link, [""]}
       }
     ]
 
