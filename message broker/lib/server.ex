@@ -2,26 +2,64 @@ defmodule Server do
   use GenServer
 
   def start_link(port) do
-    GenServer.start_link(__MODULE__, port)
+    GenServer.start_link(__MODULE__, port, name: __MODULE__)
+  end
+
+  def get_subscribers(server) do
+    GenServer.call(server, :get_subscribers)
   end
 
   def init(port) do
-    :gen_udp.open(port, [:binary, active: true])
+    {:ok, socket} = :gen_udp.open(port, [:binary, active: true])
+
+    map = %{
+      :socket => socket,
+      :subscriber => []
+    }
+
+    {:ok, map}
   end
 
-  def handle_info({:udp, _socket, _address, _port, data}, socket) do
-    handle_packet(data, socket)
-  end
-
-  defp handle_packet("quit\n", socket) do
-    IO.puts("Received: quit")
-    :gen_udp.close(socket)
-    {:stop, :normal, nil}
-  end
-
-  defp handle_packet(data, socket) do
+  def handle_info({:udp, _socket, address, port, data}, state) do
     msg_data = Jason.decode!(data)
-    Queue.add_data_to_topic(Queue, msg_data)
-    {:noreply, socket}
+    if msg_data["topics"] == nil do
+      Queue.add_data_to_topic(Queue, msg_data)
+      {:noreply, state}
+    else
+      state_data = Map.get(state, :subscriber, [])
+      topics_map =
+        Map.update!(msg_data, "topics", fn list -> Enum.map(list, &String.to_atom/1) end)
+
+      topics = topics_map["topics"]
+
+      if !Enum.find(state_data, fn x -> x[:port] == port end) do
+        state =
+          Map.put(
+            state,
+            :subscriber,
+            state_data ++ [%{:address => address, :port => port, :topics => topics}]
+          )
+
+        {:noreply, state}
+      else
+        subscriber = Enum.find(state_data, fn x -> x[:port] == port end)
+        update_subscriber = Map.replace!(subscriber, :topics, topics)
+        index = Enum.find_index(state_data, fn x -> x == subscriber end)
+        state_data = List.replace_at(state_data, index, update_subscriber)
+
+        state =
+          Map.put(
+            state,
+            :subscriber,
+            state_data
+          )
+
+        {:noreply, state}
+      end
+    end
+  end
+
+  def handle_call(:get_subscribers, _from, state) do
+    {:reply, state, state}
   end
 end

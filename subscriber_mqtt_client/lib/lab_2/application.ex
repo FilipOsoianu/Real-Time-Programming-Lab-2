@@ -4,16 +4,12 @@ defmodule Lab2.Application do
   def start(_type, _args) do
     children = [
       %{
-        id: Server,
-        start: {Server, :start_link, [6666]}
+        id: Subscriber,
+        start: {Subscriber, :start_link, [[6610 | 6666]]}
       },
       %{
-        id: Queue,
-        start: {Queue, :start_link, [""]}
-      },
-      %{
-        id: Sender,
-        start: {Sender, :start_link, [""]}
+        id: Mqtt,
+        start: {Mqtt, :start_link, [1883]}
       }
     ]
 

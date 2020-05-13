@@ -21,16 +21,6 @@ defmodule Subscriber do
   end
 
   def handle_info({:udp, _socket, address, port, data}, socket) do
-    handle_packet(data, socket, address, port)
-  end
-
-  defp handle_packet("quit\n", socket, _address, _port) do
-    IO.puts("Received: quit")
-    :gen_udp.close(socket)
-    {:stop, :normal, nil}
-  end
-
-  defp handle_packet(data, socket, address, port) do
     msg_data = Jason.decode!(data)
     Aggregator.aggregate(Aggregator, msg_data, socket, address, port)
     {:noreply, socket}

@@ -50,9 +50,12 @@ defmodule Queue do
   @impl true
   def handle_cast(:clear_queue, state) do
     keys = Map.keys(state)
-    state = Map.new(keys, fn x ->
-      {x, []}
-    end)
+
+    state =
+      Map.new(keys, fn x ->
+        {x, []}
+      end)
+
     {:noreply, state}
   end
 end

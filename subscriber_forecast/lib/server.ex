@@ -21,16 +21,7 @@ defmodule Subscriber do
   end
 
   def handle_info({:udp, _socket, _address, _port, data}, socket) do
-    handle_packet(data, socket)
-  end
 
-  defp handle_packet("quit\n", socket) do
-    IO.puts("Received: quit")
-    :gen_udp.close(socket)
-    {:stop, :normal, nil}
-  end
-
-  defp handle_packet(data, socket) do
     msg_data = Jason.decode!(data)
     Forecast.forecast(Forecast, msg_data)
     {:noreply, socket}

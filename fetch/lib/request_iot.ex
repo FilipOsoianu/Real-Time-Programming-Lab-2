@@ -12,7 +12,6 @@ defmodule RequestIot do
         DataFlowIot.send_event()
         Router.send_event_iot(event)
     end
-
     getData()
   end
 

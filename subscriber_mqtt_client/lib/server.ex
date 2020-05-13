@@ -21,8 +21,9 @@ defmodule Subscriber do
   end
 
   def handle_info({:udp, _socket, _address, _port, data}, socket) do
+
     msg_data = Jason.decode!(data)
-    Printer.printer(Printer, msg_data)
+    Mqtt.publish_mqtt(Mqtt, msg_data)
     {:noreply, socket}
   end
 end

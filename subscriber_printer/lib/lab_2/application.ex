@@ -5,7 +5,7 @@ defmodule Lab2.Application do
     children = [
       %{
         id: Subscriber,
-        start: {Subscriber, :start_link, [[6610 | 6667]]}
+        start: {Subscriber, :start_link, [[6601 | 6666]]}
       },
       %{
         id: Printer,

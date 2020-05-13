@@ -30,7 +30,6 @@ defmodule Printer do
       forecast = Map.delete(forecast, "unix_timestamp_100us")
       acc = Map.delete(acc, "topic")
       acc = Map.delete(acc, "unix_timestamp_100us")
-
       Map.merge(forecast, acc, fn _k, v1, v2 ->
         (v1 + v2) / 2
       end)
